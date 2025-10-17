@@ -9,3 +9,5 @@ __pycache__/
 
 # Ignore other temporary files
 *.pyc
+
+.idea/
