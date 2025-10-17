@@ -2,6 +2,9 @@ from app.exchanges import get_nobitex_price, get_wallex_price
 from app.notifier import send_telegram_message
 from datetime import datetime
 from app.metrics import SCHEDULER_RUNS, ARBITRAGE_FOUND, PRICE_GAP
+from app.database import insert_price, init_db
+
+init_db()
 
 async def check_arbitrage(threshold_ratio: float = 0.001):
     SCHEDULER_RUNS.inc()
@@ -21,6 +24,9 @@ async def check_arbitrage(threshold_ratio: float = 0.001):
     ratio = abs(spread) / avg_price
 
     print(f"Nobitex: {p_n:.2f} IRR | Wallex: {p_w:.2f} IRR | Spread: {spread:.2f} | Ratio: {ratio:.4f}")
+
+    insert_price("nobitex", p_n)
+    insert_price("wallex", p_w)
 
     if ratio >= threshold_ratio:
         # Record Prometheus metrics

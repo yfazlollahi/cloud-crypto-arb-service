@@ -1,0 +1,41 @@
+import psycopg2
+import os
+
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "arbitrage_db")
+DB_USER = os.getenv("DB_USER", "admin")
+DB_PASS = os.getenv("DB_PASS", "admin123")
+
+def get_connection():
+    return psycopg2.connect(
+        host=DB_HOST,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS
+    )
+
+def init_db():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS prices (
+            id SERIAL PRIMARY KEY,
+            exchange VARCHAR(50),
+            price NUMERIC,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def insert_price(exchange, price):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO prices (exchange, price) VALUES (%s, %s)",
+        (exchange, price)
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
