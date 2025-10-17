@@ -1,8 +1,11 @@
 from app.exchanges import get_nobitex_price, get_wallex_price
 from app.notifier import send_telegram_message
 from datetime import datetime
+from app.metrics import SCHEDULER_RUNS, ARBITRAGE_FOUND, PRICE_GAP
 
 async def check_arbitrage(threshold_ratio: float = 0.001):
+    SCHEDULER_RUNS.inc()
+
     p_n = await get_nobitex_price()  # Nobitex price in Rial
     p_w_dollar = await get_wallex_price()  # Wallex price in USD
 
@@ -20,6 +23,10 @@ async def check_arbitrage(threshold_ratio: float = 0.001):
     print(f"Nobitex: {p_n:.2f} IRR | Wallex: {p_w:.2f} IRR | Spread: {spread:.2f} | Ratio: {ratio:.4f}")
 
     if ratio >= threshold_ratio:
+        # Record Prometheus metrics
+        ARBITRAGE_FOUND.inc()
+        PRICE_GAP.labels("USDT-USDC").observe(abs(spread))
+
         direction = "Buy Nobitex / Sell Wallex" if spread > 0 else "Buy Wallex / Sell Nobitex"
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
