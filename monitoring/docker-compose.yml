@@ -28,6 +28,7 @@ services:
     container_name: postgres_exporter
     restart: unless-stopped
     environment:
-      DATA_SOURCE_NAME: "postgresql://root:gMbYzw9aTVpJP4JIe4CgUcw7@arbitrage-db.liara.ir:5432/postgres?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://root:gMbYzw9aTVpJP4IJe4CgUcw7@hotaka.liara.cloud:33099/postgres?sslmode=disable"
     ports:
       - "9187:9187"
+  
