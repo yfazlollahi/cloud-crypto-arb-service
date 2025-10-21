@@ -31,6 +31,3 @@ services:
       DATA_SOURCE_NAME: "postgresql://root:gMbYzw9aTVpJP4JIe4CgUcw7@arbitrage-db.liara.ir:5432/postgres?sslmode=disable"
     ports:
       - "9187:9187"
-
-volumes:
-  postgres_data:
